@@ -6,6 +6,8 @@
 #include <cstddef>
 #include <concepts>
 #include <vector>
+#include <set>
+#include <algorithm>
 
 template<typename T>
 class Vector {
@@ -71,5 +73,16 @@ int main(int, char**) {
     vs[4] = "nice to meet you";
     // write(vs);
     f2(vs);
+
+    std::vector<int> s1 = {1, 2, 3, 4, 5};
+    std::vector<int> s2 = {7, 9, 6, 2};
+    std::sort(s1.begin(), s1.end());
+    std::sort(s2.begin(), s2.end());
+    std::vector<int> s_intersect;
+    std::vector<int> s_diff;
+
+    std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), std::back_inserter(s_intersect));
+    std::cout << "the size of intersection is " << s_intersect.size() << std::endl;
+
     return 0;
 }
