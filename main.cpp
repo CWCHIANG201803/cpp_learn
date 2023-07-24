@@ -1,88 +1,50 @@
-#include <iostream>
-#include <string>
-#include <tuple>
-#include <stdexcept>
 #include <list>
-#include <cstddef>
-#include <concepts>
-#include <vector>
-#include <set>
-#include <algorithm>
+#include <string>
 
-template<typename T>
-class Vector {
-private:
-    T* elem;
-    int sz;
+class StyleTemplate {};
+
+class StyleMaster {
 public:
-    explicit Vector(int s);
-    ~Vector(){ delete[] elem; }
-
-    T& operator[](int i){ return elem[i]; }
-    const T& operator[](int i) const;
-    int size() const { return sz; }
+    static std::list<int> formStyles(StyleTemplate tmp, int id){
+        return {};
+    }
+};
+# ifdef old
+class PageLayout {
+private:
+  int id = 0; 
+  std::list<int> styles; 
+  StyleTemplate tmp;
+  //...
+protected:
+  void rebindStyles() {
+    styles = StyleMaster::formStyles(tmp, id);
+  }
+};
+#else
+class PageLayout {
+private:
+  int id = 0; 
+  std::list<int> styles; 
+  StyleTemplate tmp;
+  //...
+protected:
+  void rebindStyles() {
+    styles = StyleMaster::formStyles(tmp, id);
+  }
+  std::list<int> formStyles(StyleTemplate tmpl, int id){
+    return StyleMaster::formStyles(tmp, id);
+  }
+};
+#endif
+class TestingPageLayout : public PageLayout 
+{
+protected:
+    std::list<int> formStyles(StyleTemplate tmpl, int id) {
+        return std::list<int>();
+    }
 };
 
-template<typename T> 
-Vector<T>::Vector(int s) {
-    if (s<0) 
-        throw std::invalid_argument("cannot be negative");
-    elem = new T[s];
-    sz = s;
-}
-
-template<typename T> 
-const T& Vector<T>::operator[](int i) const {
-    if (i<0 || size()<=i)
-        throw std::out_of_range("Vector::operator[]");
-    return elem[i];
-}
-
-template<typename T>
-T* begin(Vector<T>& x) {
-    return x.size() ? &x[0] : nullptr;
-    // pointer to ﬁrst element or nullptr
-}
-
-template<typename T>
-T* end(Vector<T>& x) {
-    return x.size() ? &x[0]+x.size() : nullptr;
-    // pointer to one-past-last element
-}
-
-void write(const Vector<std::string>& vs) {
-    std::cout << "run with traditional loop" << std::endl;
-    for (int i = 0; i!=vs.size(); ++i)
-        std::cout << vs[i] << '\n';
-}
-
-void f2(Vector<std::string>& vs) {
-    std::cout << "run with range for loop" << std::endl;
-    for (auto& s : vs)
-        std::cout << s << '\n';
-}
-
-
-
 int main(int, char**) {
-
-    Vector<char> vc(200);
-    Vector<std::string> vs(5);
-    Vector<std::list<int>> vli(45);
-    vs[0] = "how are you";
-    vs[4] = "nice to meet you";
-    // write(vs);
-    f2(vs);
-
-    std::vector<int> s1 = {1, 2, 3, 4, 5};
-    std::vector<int> s2 = {7, 9, 6, 2};
-    std::sort(s1.begin(), s1.end());
-    std::sort(s2.begin(), s2.end());
-    std::vector<int> s_intersect;
-    std::vector<int> s_diff;
-
-    std::set_intersection(s1.begin(), s1.end(), s2.begin(), s2.end(), std::back_inserter(s_intersect));
-    std::cout << "the size of intersection is " << s_intersect.size() << std::endl;
-
     return 0;
 }
