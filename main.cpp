@@ -1,49 +1,24 @@
-#include <list>
-#include <string>
+#include "dependency.h"
 
-class StyleTemplate {};
+// WorkflowEngine.h
 
-class StyleMaster {
+class WorkflowEngine { 
+private:
+  Config AppConfiguration;
+  TransactionManager* tm;
 public:
-    static std::list<int> formStyles(StyleTemplate tmp, int id){
-        return {};
-    }
+  WorkflowEngine ();
+  //... 
 };
-# ifdef old
-class PageLayout {
-private:
-  int id = 0; 
-  std::list<int> styles; 
-  StyleTemplate tmp;
-  //...
-protected:
-  void rebindStyles() {
-    styles = StyleMaster::formStyles(tmp, id);
-  }
+
+// WorkflowEngine.cpp
+WorkflowEngine::WorkflowEngine() {
+  Reader *reader = new ModelReader(AppConfiguration.getDryConfiguration());
+  Persister* persister = new XMLStore(AppConfiguration.getDryConfiguration());
+  tm = new TransactionManager(reader, persister);
+  // ...
 };
-#else
-class PageLayout {
-private:
-  int id = 0; 
-  std::list<int> styles; 
-  StyleTemplate tmp;
-  //...
-protected:
-  void rebindStyles() {
-    styles = StyleMaster::formStyles(tmp, id);
-  }
-  std::list<int> formStyles(StyleTemplate tmpl, int id){
-    return StyleMaster::formStyles(tmp, id);
-  }
-};
-#endif
-class TestingPageLayout : public PageLayout 
-{
-protected:
-    std::list<int> formStyles(StyleTemplate tmpl, int id) {
-        return std::list<int>();
-    }
-};
+
 
 int main(int, char**) {
     return 0;
