@@ -12,7 +12,7 @@ public:
 
 class Config {
 public:
-  std::string getDryConfiguration(){
+  std::string getDryConfiguration() const{
     return "";
   }
 };
