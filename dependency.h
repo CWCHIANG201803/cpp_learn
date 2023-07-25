@@ -17,9 +17,21 @@ public:
   }
 };
 
-class TransactionManager{
+
+class TransactionManager {
 public:
   TransactionManager(Reader* reader, Persister* persister){}
+  virtual int getTransactionCount() {
+    return 3;
+  }
+};
+
+class FakeTransactionManager : public TransactionManager{
+public:
+  FakeTransactionManager(): TransactionManager(nullptr, nullptr){}
+  int getTransactionCount() override {
+    return 0;
+  }
 };
 
 class ModelReader : public Reader {

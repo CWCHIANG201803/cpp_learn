@@ -1,5 +1,6 @@
 #include "dependency.h"
-
+#include "gtest/gtest.h"
+#include <memory>
 // WorkflowEngine.h
 /*
 class WorkflowEngine { 
@@ -25,9 +26,10 @@ private:
   TransactionManager *tm;
   Config AppConfig;
 protected:
-  TransactionManager *getTransactionManager();
+  virtual TransactionManager *getTransactionManager();
 public:
   WorkflowEngine();
+  void run(){}
 };
 
 WorkflowEngine::WorkflowEngine() :tm (nullptr) {
@@ -35,7 +37,6 @@ WorkflowEngine::WorkflowEngine() :tm (nullptr) {
 }
 
 TransactionManager* WorkflowEngine::getTransactionManager() {
-
   if (tm == nullptr) {
     Reader *reader = new ModelReader(AppConfig.getDryConfiguration());
     Persister *persister = new XMLStore(AppConfig.getDryConfiguration());
@@ -44,7 +45,26 @@ TransactionManager* WorkflowEngine::getTransactionManager() {
   return tm;
 }
 
+class TestWorkflowEngine : public WorkflowEngine {
+public:
+  TransactionManager *getTransactionManager() override { 
+    return &transactionManager; 
+  }
+private:
+  FakeTransactionManager transactionManager;
+};
 
-int main(int, char**) {
-    return 0;
+TEST(TransactionCount, WorkflowEngine){
+  std::unique_ptr<TestWorkflowEngine> engine(new TestWorkflowEngine);
+  engine->run();
+  ASSERT_EQ(0, engine->getTransactionManager()
+                    ->getTransactionCount());
 }
+
+int main(int argc, char** argv)
+{
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
+
+
