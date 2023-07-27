@@ -1,64 +1,74 @@
-#include "dependency.h"
 #include "gtest/gtest.h"
-#include <memory>
-// WorkflowEngine.h
-/*
-class WorkflowEngine { 
-private:
-  Config AppConfiguration;
-  TransactionManager* tm;
+#include "dependency.h"
+
+struct IRGHConnection
+{
+    virtual void connect() = 0;
+    virtual void disconnect() = 0;
+    virtual RFDIReport RFDIReportFor(int id) = 0;
+    virtual ACTIOReport ACTIOReportFor(int customerID) = 0;
+};
+
+class RGHConnection 
+{
 public:
-  WorkflowEngine ();
-  //... 
-};
-
-// WorkflowEngine.cpp
-WorkflowEngine::WorkflowEngine() {
-  Reader *reader = new ModelReader(AppConfiguration.getDryConfiguration());
-  Persister* persister = new XMLStore(AppConfiguration.getDryConfiguration());
-  tm = new TransactionManager(reader, persister);
-  // ...
-};
-
-*/
-class WorkflowEngine {
+    RGHConnection(int port, string name, string passwd) 
+    {
+        // ...
+    }
+    void connect()
+    { 
+        // ...
+    }
+    void disconnect()
+    { 
+        // ...
+    }
+    RFDIReport RFDIReportFor(int id) 
+    { 
+        return {}; 
+    }
+    ACTIOReport ACTIOReportFor(int customerID) 
+    { 
+        return {}; 
+    }
 private:
-  TransactionManager *tm;
-  Config AppConfig;
-protected:
-  virtual TransactionManager *getTransactionManager();
-public:
-  WorkflowEngine();
-  void run(){}
+    void retry()
+    {
+
+    }
+    RFPacket formPacket() 
+    { 
+        return {}; 
+    }
 };
 
-WorkflowEngine::WorkflowEngine() :tm (nullptr) {
-  // ...
-}
-
-TransactionManager* WorkflowEngine::getTransactionManager() {
-  if (tm == nullptr) {
-    Reader *reader = new ModelReader(AppConfig.getDryConfiguration());
-    Persister *persister = new XMLStore(AppConfig.getDryConfiguration());
-    tm = new TransactionManager(reader,persister);
-  }
-  return tm;
-}
-
-class TestWorkflowEngine : public WorkflowEngine {
+class CreditMaster 
+{
 public:
-  TransactionManager *getTransactionManager() override { 
-    return &transactionManager; 
-  }
-private:
-  FakeTransactionManager transactionManager;
+    CreditMaster(string filename, bool islocal) 
+    {
+        // ...
+    }
 };
 
-TEST(TransactionCount, WorkflowEngine){
-  std::unique_ptr<TestWorkflowEngine> engine(new TestWorkflowEngine);
-  engine->run();
-  ASSERT_EQ(0, engine->getTransactionManager()
-                    ->getTransactionCount());
+class CreditValidator
+{
+public:
+    CreditValidator(RGHConnection* connection, CreditMaster* master, string validator_id)
+    {
+        // ...
+    }
+    Certificate validateCustomer(Customer customer)
+    {
+        return Certificate();
+    }
+};
+
+TEST(Demo, testCreate){
+    RGHConnection* connection = new RGHConnection(0, "admin", "rii8ii9s");
+    CreditMaster* master = new CreditMaster("crm2.mas", true);
+    CreditValidator* validator = new CreditValidator(connection, master, "a");
 }
 
 int main(int argc, char** argv)
@@ -66,5 +76,3 @@ int main(int argc, char** argv)
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }
-
-

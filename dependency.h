@@ -1,4 +1,5 @@
 #include <string>
+using namespace std;
 
 class Persister {
 public:
@@ -42,4 +43,25 @@ public:
 class XMLStore : public Persister {
 public:
   XMLStore(std::string config): Persister(){}
+};
+
+class Certificate {
+public:
+  Certificate(){}
+};
+class Customer {
+public:
+  Customer(){}
+};
+
+struct RFDIReport {
+
+};
+
+struct ACTIOReport {
+
+};
+
+struct RFPacket {
+
 };
