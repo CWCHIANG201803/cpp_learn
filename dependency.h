@@ -45,13 +45,32 @@ public:
   XMLStore(std::string config): Persister(){}
 };
 
+enum class CertificateState {
+  VALID, INVALID
+};
 class Certificate {
+  CertificateState state_;
 public:
   Certificate(){}
+  void setStatus(bool is_member){
+    state_ = is_member ? 
+    CertificateState::VALID : 
+    CertificateState::INVALID;
+  }
+  CertificateState getStatus()
+  { 
+    return state_; 
+  }
 };
+
 class Customer {
+  std::string name_;
+  int id_;
 public:
-  Customer(){}
+  Customer(std::string name="", int id=-1): name_(name), id_(id){
+  }
+  std::string getName(){ return name_;}
+  int getId(){ return id_;}
 };
 
 struct RFDIReport {

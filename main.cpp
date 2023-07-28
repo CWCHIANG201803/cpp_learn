@@ -9,26 +9,53 @@ struct IRGHConnection
     virtual ACTIOReport ACTIOReportFor(int customerID) = 0;
 };
 
-class RGHConnection 
+class FakeConnection : public IRGHConnection
+{
+public:
+    RFDIReport* report = nullptr;
+public:
+    FakeConnection()
+    {
+
+    }
+    void connect() override 
+    {
+
+    }
+    void disconnect() override 
+    {
+
+    }
+    RFDIReport RFDIReportFor(int id) override 
+    {
+        return RFDIReport();
+    }
+    ACTIOReport ACTIOReportFor(int customerID) override 
+    {
+        return ACTIOReport();
+    }
+};
+
+class RGHConnection : public IRGHConnection
 {
 public:
     RGHConnection(int port, string name, string passwd) 
     {
         // ...
     }
-    void connect()
+    void connect() override
     { 
         // ...
     }
-    void disconnect()
+    void disconnect() override
     { 
         // ...
     }
-    RFDIReport RFDIReportFor(int id) 
+    RFDIReport RFDIReportFor(int id) override
     { 
         return {}; 
     }
-    ACTIOReport ACTIOReportFor(int customerID) 
+    ACTIOReport ACTIOReportFor(int customerID) override
     { 
         return {}; 
     }
@@ -55,20 +82,27 @@ public:
 class CreditValidator
 {
 public:
-    CreditValidator(RGHConnection* connection, CreditMaster* master, string validator_id)
+    CreditValidator(IRGHConnection* connection, CreditMaster* master, string validator_id)
     {
         // ...
     }
-    Certificate validateCustomer(Customer customer)
+    Certificate validateCustomer(Customer* customer)
     {
-        return Certificate();
+        bool is_member = customer->getName()=="Peter" && customer->getId()==2;
+        Certificate c;
+        c.setStatus(is_member);
+        return c;
     }
 };
 
 TEST(Demo, testCreate){
-    RGHConnection* connection = new RGHConnection(0, "admin", "rii8ii9s");
+    // RGHConnection* connection = new RGHConnection(0, "admin", "rii8ii9s");
+    FakeConnection* connection = new FakeConnection();
     CreditMaster* master = new CreditMaster("crm2.mas", true);
     CreditValidator* validator = new CreditValidator(connection, master, "a");
+    connection->report = new RFDIReport();
+    Certificate result = validator->validateCustomer(new Customer("Peter", 2));
+    ASSERT_EQ(CertificateState::VALID, result.getStatus());
 }
 
 int main(int argc, char** argv)
