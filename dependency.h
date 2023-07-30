@@ -1,4 +1,5 @@
 #include <string>
+#include <map>
 using namespace std;
 
 class Persister {
@@ -54,12 +55,12 @@ public:
   Certificate(){}
   void setStatus(bool is_member){
     state_ = is_member ? 
-    CertificateState::VALID : 
+    CertificateState::VALID :
     CertificateState::INVALID;
   }
   CertificateState getStatus()
   { 
-    return state_; 
+    return state_;
   }
 };
 

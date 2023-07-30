@@ -2,13 +2,16 @@
 #include "dependency.h"
 #include <exception>
 
-
 class PermitRepository { 
 private: 
 	static PermitRepository* instance;
+protected:
 	PermitRepository() {}
-
 public: 
+	static void setTestingInstance(PermitRepository* newInstance) {
+		instance = newInstance;
+	}
+
 	static PermitRepository* getInstance() { 
 		if (instance == nullptr) { 
 			instance = new PermitRepository(); 
@@ -16,13 +19,24 @@ public:
 		return instance; 
 	}
 
-	Permit* findAssociatedPermit(PermitNotice* notice) { 
+	virtual Permit* findAssociatedPermit(PermitNotice* notice) { 
 		return new Permit(notice);
 	} 
 	// ...
 };
 PermitRepository* PermitRepository::instance = nullptr;
 
+class TestingPermitRepository : public PermitRepository {
+private:
+    map<PermitNotice*,Permit*> permits;
+public:
+    void addAssociatedPermit(PermitNotice* notice, Permit* permit) {
+        permits.insert({notice, permit});
+    }
+    Permit* findAssociatedPermit(PermitNotice* notice) override {
+        return permits[notice];
+    }
+};
 
 class Facility { 
 private: 
@@ -41,6 +55,7 @@ public:
         }
 	}
 };
+
 
 TEST(IrritatingGlobalDependencyTest, test1){
     PermitNotice* notice = new PermitNotice(0, "a");
