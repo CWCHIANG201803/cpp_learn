@@ -84,3 +84,16 @@ struct ACTIOReport {
 struct RFPacket {
 
 };
+
+
+struct PermitNotice{
+    PermitNotice(int id, string name){}
+    bool isValid(){ return true;}
+};
+
+class Permit {
+public:
+    Permit(PermitNotice* notice){}
+    bool isValid(){ return false;}
+    void validate(){}
+};
