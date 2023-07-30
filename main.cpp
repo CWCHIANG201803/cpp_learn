@@ -82,7 +82,7 @@ public:
 class CreditValidator
 {
 public:
-    CreditValidator(IRGHConnection* connection, CreditMaster* master, string validator_id)
+    CreditValidator(IRGHConnection* connection, CreditMaster* master, string validator_id="")
     {
         // ...
     }
@@ -93,9 +93,10 @@ public:
         c.setStatus(is_member);
         return c;
     }
+    double getValidationPercent(){ return 100.0; }
 };
 
-TEST(Demo, testCreate){
+TEST(ValidatorTest, testCreate){
     // RGHConnection* connection = new RGHConnection(0, "admin", "rii8ii9s");
     FakeConnection* connection = new FakeConnection();
     CreditMaster* master = new CreditMaster("crm2.mas", true);
@@ -103,6 +104,15 @@ TEST(Demo, testCreate){
     connection->report = new RFDIReport();
     Certificate result = validator->validateCustomer(new Customer("Peter", 2));
     ASSERT_EQ(CertificateState::VALID, result.getStatus());
+}
+
+TEST(ValidatorTest, testAllPassed100Percent){
+    FakeConnection* connection = new FakeConnection();
+    CreditValidator* validator = new CreditValidator(connection, nullptr, "a");
+    connection->report = new RFDIReport();
+    Certificate result = validator->validateCustomer(new Customer("Jacky", 3));
+
+    ASSERT_DOUBLE_EQ(100.0, validator->getValidationPercent());
 }
 
 int main(int argc, char** argv)
