@@ -89,12 +89,12 @@ struct RFPacket {
 
 struct PermitNotice{
     PermitNotice(int id, string name){}
-    bool isValid(){ return true;}
+    bool isValid(){ return false;}
 };
 
 class Permit {
 public:
     Permit(PermitNotice* notice){}
-    bool isValid(){ return false;}
+    bool isValid(){ return true;}
     void validate(){}
 };
