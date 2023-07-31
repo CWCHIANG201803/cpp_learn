@@ -1,118 +1,44 @@
 #include "gtest/gtest.h"
 #include "dependency.h"
 
-struct IRGHConnection
-{
-    virtual void connect() = 0;
-    virtual void disconnect() = 0;
-    virtual RFDIReport RFDIReportFor(int id) = 0;
-    virtual ACTIOReport ACTIOReportFor(int customerID) = 0;
-};
-
-class FakeConnection : public IRGHConnection
+class SerialTask
 {
 public:
-    RFDIReport* report = nullptr;
-public:
-    FakeConnection()
-    {
-
+    virtual void run(){
+        std::cout << "run method from serial task" << std::endl;        
     }
-    void connect() override 
-    {
-
-    }
-    void disconnect() override 
-    {
-
-    }
-    RFDIReport RFDIReportFor(int id) override 
-    {
-        return RFDIReport();
-    }
-    ACTIOReport ACTIOReportFor(int customerID) override 
-    {
-        return ACTIOReport();
+    virtual void query(){
+        std::cout << "query method from serial task" << std::endl;
     }
 };
 
-class RGHConnection : public IRGHConnection
+class ISchedulingTask
 {
 public:
-    RGHConnection(int port, string name, string passwd) 
-    {
-        // ...
-    }
-    void connect() override
-    { 
-        // ...
-    }
-    void disconnect() override
-    { 
-        // ...
-    }
-    RFDIReport RFDIReportFor(int id) override
-    { 
-        return {}; 
-    }
-    ACTIOReport ACTIOReportFor(int customerID) override
-    { 
-        return {}; 
-    }
-private:
-    void retry()
-    {
+    virtual void run() = 0;
+};
 
-    }
-    RFPacket formPacket() 
-    { 
-        return {}; 
+class SchedulingTask : public SerialTask, public ISchedulingTask
+{
+public:
+     virtual void run() override { SerialTask::run();}
+};
+
+class FakeSchedulingTask : public ISchedulingTask
+{
+public:
+    virtual void run() override{
+        std::cout << "run method from fake scheduling task" << std::endl;
     }
 };
 
-class CreditMaster 
+TEST(DependencyTest, testCase1)
 {
-public:
-    CreditMaster(string filename, bool islocal) 
-    {
-        // ...
-    }
-};
-
-class CreditValidator
-{
-public:
-    CreditValidator(IRGHConnection* connection, CreditMaster* master, string validator_id="")
-    {
-        // ...
-    }
-    Certificate validateCustomer(Customer* customer)
-    {
-        bool is_member = customer->getName()=="Peter" && customer->getId()==2;
-        Certificate c;
-        c.setStatus(is_member);
-        return c;
-    }
-    double getValidationPercent(){ return 100.0; }
-};
-
-TEST(ValidatorTest, testCreate){
-    // RGHConnection* connection = new RGHConnection(0, "admin", "rii8ii9s");
-    FakeConnection* connection = new FakeConnection();
-    CreditMaster* master = new CreditMaster("crm2.mas", true);
-    CreditValidator* validator = new CreditValidator(connection, master, "a");
-    connection->report = new RFDIReport();
-    Certificate result = validator->validateCustomer(new Customer("Peter", 2));
-    ASSERT_EQ(CertificateState::VALID, result.getStatus());
-}
-
-TEST(ValidatorTest, testAllPassed100Percent){
-    FakeConnection* connection = new FakeConnection();
-    CreditValidator* validator = new CreditValidator(connection, nullptr, "a");
-    connection->report = new RFDIReport();
-    Certificate result = validator->validateCustomer(new Customer("Jacky", 3));
-
-    ASSERT_DOUBLE_EQ(100.0, validator->getValidationPercent());
+    ISchedulingTask* task = new SchedulingTask();
+    task->run();
+    ISchedulingTask* fake_task = new FakeSchedulingTask();
+    fake_task->run();
+    // purpose: create a fake schedulingTask
 }
 
 int main(int argc, char** argv)
